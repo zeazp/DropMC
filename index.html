@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCNameSnipe — Real-Time Minecraft Name & Drop Tracker</title>
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="MCNameSnipe — Real-Time Minecraft Name & Drop Tracker" />
+  <meta name="description" content="Discover upcoming Minecraft username drops, explore 3D interactive skins, OG appraisal rarity scores, real-time millisecond drop countdowns, and sniper tools." />
+  <meta name="keywords" content="minecraft name sniper, minecraft drop tracker, og names, namemc tracker, 3-character names, minecraft skin viewer, drop countdown" />
+  <meta name="author" content="MCNameSnipe" />
+  <meta name="theme-color" content="#0c0f17" />
+  <meta name="color-scheme" content="dark" />
+
+  <!-- Open Graph / Facebook / Discord Embeds -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="MCNameSnipe — Real-Time Minecraft Name & Drop Tracker" />
+  <meta property="og:description" content="Track upcoming Minecraft name drops with precision millisecond countdowns, OG rarity appraisals, 3D skin viewer, and drop alerts." />
+  <meta property="og:site_name" content="MCNameSnipe Pro" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MCNameSnipe — Real-Time Minecraft Name & Drop Tracker" />
+  <meta name="twitter:description" content="Real-time Minecraft drop schedules, hot names discovery hub, OG appraisals, and reflex sniper trainer." />
+
+  <!-- Favicon & PWA Manifest -->
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="manifest" href="./site.webmanifest" />
+
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand-container">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">MCNameSnipe <span class="brand-badge">Pro</span></div>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Search & Profiles
+        </button>
+        <button class="nav-item" data-tab="watchlist">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Watchlist & Timers
+          <span class="nav-count" id="nav-watchlist-count">5</span>
+        </button>
+        <button class="nav-item" data-tab="trainer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line></svg>
+          Snipe Reflex Trainer
+        </button>
+        <button class="nav-item" data-tab="generator">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          OG Name Generator
+        </button>
+        <button class="nav-item" data-tab="calculator">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>
+          Drop Calculator
+        </button>
+        <button class="nav-item" data-tab="status">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          Mojang Status
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-clock-card">
+          <div class="local-time" id="sidebar-local-clock">00:00:00</div>
+          <div class="utc-sublabel" id="sidebar-utc-clock">00:00:00 UTC</div>
+          <div class="atomic-sync-badge" id="recalibrate-clock-btn" title="Click to recalibrate against Atomic HTTP clock">
+            <span class="stat-dot atomic"></span>
+            <span id="atomic-sync-text">Atomic Sync: ±0ms</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-stats">
+          <div class="stat-pill">
+            <span class="stat-dot dropping"></span>
+            <span id="stat-dropping-text">2 Dropping Soon</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-dot available"></span>
+            <span id="stat-available-text">1 Available</span>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="icon-btn" id="webhook-settings-btn" title="Discord Webhook Alert Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </button>
+
+          <button class="icon-btn" id="sound-toggle-btn" title="Toggle Sound Feedback">
+            <svg id="sound-icon-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <svg id="sound-icon-off" style="display: none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+          </button>
+
+          <button class="btn-primary" id="open-add-modal-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Track Name
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Views -->
+      <div class="page-container">
+        
+        <!-- View 1: Search & Profiles -->
+        <section class="page-view active" id="view-search">
+          <!-- Live Drop Radar Marquee Ticker -->
+          <div class="drop-marquee-banner" id="drop-marquee-banner">
+            <div class="marquee-tag">
+              <span class="stat-dot dropping"></span>
+              <span>LIVE DROP RADAR</span>
+            </div>
+            <div class="marquee-track-wrapper">
+              <div class="marquee-track" id="marquee-track">
+                <!-- Dynamically generated live drop ticker items -->
+              </div>
+            </div>
+            <button class="marquee-refresh-btn" id="marquee-refresh-btn" title="Refresh Live Drops Feed">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </button>
+          </div>
+
+          <div class="search-hero">
+            <h1 class="search-hero-title">Minecraft <span>NameMC & Drop Explorer</span></h1>
+            <p class="search-hero-subtitle">Real-time drop countdowns, hot trending names, 3D interactive skins, OG appraisal scores, and sniper radar.</p>
+            
+            <div class="search-interactive-wrapper">
+              <form id="search-form" class="search-box-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="search-input" class="search-input" placeholder="Search any Minecraft username (e.g. Void, Notch, Aero, q7z)..." autocomplete="off" spellcheck="false" />
+                <button type="submit" class="search-submit-btn">
+                  Search
+                </button>
+              </form>
+
+              <!-- Live Autocomplete Suggestion Dropdown -->
+              <div class="search-autocomplete-box" id="search-autocomplete-box" style="display: none;"></div>
+            </div>
+
+            <!-- Action Quick Tools Toolbar -->
+            <div class="search-tools-toolbar">
+              <button class="hero-tool-btn" id="open-roulette-btn" title="Spin Drop Roulette to discover random rare names">
+                <span>🎲</span>
+                <span>Drop Roulette</span>
+              </button>
+              <button class="hero-tool-btn" id="toggle-name-duel-btn" title="Compare any 2 usernames head-to-head">
+                <span>⚔️</span>
+                <span>OG Name Duel</span>
+              </button>
+            </div>
+
+            <div class="quick-search-tags">
+              <span class="quick-tag-label">Trending:</span>
+              <span class="quick-tag" data-name="Void">Void 🔥</span>
+              <span class="quick-tag" data-name="Aero">Aero ⏱️</span>
+              <span class="quick-tag" data-name="q7z">q7z 👑</span>
+              <span class="quick-tag" data-name="Echo">Echo ⏱️</span>
+              <span class="quick-tag" data-name="Specter">Specter</span>
+              <span class="quick-tag" data-name="PixelCraft99">PixelCraft99 ✨</span>
+              <span class="quick-tag" data-name="Notch">Notch</span>
+            </div>
+
+            <!-- Recent Searches Chip Row -->
+            <div class="recent-searches-row" id="recent-searches-row" style="display: none;">
+              <span class="recent-label">Recent Searches:</span>
+              <div class="recent-chips" id="recent-chips-container"></div>
+            </div>
+          </div>
+
+          <!-- Single Profile / Search Result Area -->
+          <div id="search-result-container" class="search-results-area">
+            <!-- Dynamically populated when user searches -->
+          </div>
+
+          <!-- Interactive OG Name Duel Section (Collapsible / Toggleable) -->
+          <div id="name-duel-section" class="name-duel-section" style="display: none;">
+            <div class="duel-card">
+              <div class="duel-header">
+                <div>
+                  <div class="duel-badge">⚔️ Interactive Battle Arena</div>
+                  <h2 class="duel-title">OG Name Rarity Duel</h2>
+                  <p class="duel-subtitle">Pit two usernames head-to-head. Compares OG rarity tiers, character length, dictionary status, and market prestige.</p>
+                </div>
+                <button class="btn-ghost" id="close-duel-btn">✕ Close Arena</button>
+              </div>
+
+              <!-- Preset Matchups -->
+              <div class="duel-presets-row">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Featured Matchups:</span>
+                <button class="duel-preset-btn" data-n1="Void" data-n2="Aero">Void vs Aero</button>
+                <button class="duel-preset-btn" data-n1="Specter" data-n2="Vortex">Specter vs Vortex</button>
+                <button class="duel-preset-btn" data-n1="q7z" data-n2="x8z">q7z vs x8z</button>
+                <button class="duel-preset-btn" data-n1="Notch" data-n2="jeb_">Notch vs jeb_</button>
+              </div>
+
+              <div class="duel-input-grid">
+                <div class="duel-fighter-input-box">
+                  <label class="form-label">Fighter 1 (Username)</label>
+                  <input type="text" id="duel-input-1" class="form-input" placeholder="e.g. Void" value="Void" maxlength="16" />
+                </div>
+                <div class="duel-vs-circle">VS</div>
+                <div class="duel-fighter-input-box">
+                  <label class="form-label">Fighter 2 (Username)</label>
+                  <input type="text" id="duel-input-2" class="form-input" placeholder="e.g. Aero" value="Aero" maxlength="16" />
+                </div>
+              </div>
+
+              <button class="btn-primary duel-fight-btn" id="run-duel-btn">
+                <span>⚔️</span>
+                <span>FIGHT & COMPARE RARITY</span>
+              </button>
+
+              <div id="duel-results-container" class="duel-results-area" style="display: none;"></div>
+            </div>
+          </div>
+
+          <!-- Comprehensive Dropping Soon & Hot Names Discovery Command Center -->
+          <div id="drops-hub-section" class="drops-hub-section">
+            <div class="drops-hub-header">
+              <div class="drops-hub-title-group">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <h2 class="drops-hub-title">Upcoming Drops & Hot Names Hub</h2>
+                  <span class="drops-live-indicator"><span class="stat-dot dropping"></span> LIVE TICKING</span>
+                </div>
+                <p class="drops-hub-subtitle">Real-time synchronized dropping schedule, hot searched handles, and freshly available Minecraft usernames.</p>
+              </div>
+
+              <!-- Main Drop Category Tabs -->
+              <div class="drops-category-tabs">
+                <button class="drop-cat-tab active" data-drop-tab="hot">
+                  <span>🔥</span>
+                  <span>Hot & Trending Drops</span>
+                </button>
+                <button class="drop-cat-tab" data-drop-tab="dropping_soon">
+                  <span>⏱️</span>
+                  <span>Dropping Soon</span>
+                </button>
+                <button class="drop-cat-tab" data-drop-tab="rare_3char">
+                  <span>👑</span>
+                  <span>Rare 3-Char & OG</span>
+                </button>
+                <button class="drop-cat-tab" data-drop-tab="available">
+                  <span>✨</span>
+                  <span>Available Now</span>
+                </button>
+                <button class="drop-cat-tab" data-drop-tab="most_searched">
+                  <span>💎</span>
+                  <span>Most Searched</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sub-filters & Quick Filter Bar -->
+            <div class="drops-subfilters-bar">
+              <div class="drops-length-chips">
+                <button class="length-chip active" data-length="all">All Lengths</button>
+                <button class="length-chip" data-length="3char">3-Char (Rare OG)</button>
+                <button class="length-chip" data-length="4char">4-Char</button>
+                <button class="length-chip" data-length="5char">5-Char</button>
+                <button class="length-chip" data-length="clean_words">Clean Dictionary Words</button>
+              </div>
+
+              <div class="drops-filter-controls">
+                <div class="drops-search-box">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" id="drops-filter-input" placeholder="Filter names in feed..." />
+                </div>
+
+                <select id="drops-sort-select" class="form-select drops-sort-select">
+                  <option value="soonest">Drop Time: Soonest First ⏱️</option>
+                  <option value="most_hyped">Most Hyped by Community 🔥</option>
+                  <option value="most_searched">Most Searched on NameMC 💎</option>
+                  <option value="highest_og">Highest OG Score 👑</option>
+                  <option value="alpha">Alphabetical (A-Z)</option>
+                </select>
+
+                <div class="drops-count-pill" id="drops-count-pill">
+                  21 Names
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid of Live Dropping Cards -->
+            <div id="drops-feed-grid" class="drops-feed-grid">
+              <!-- Dynamically populated live drop cards -->
+            </div>
+          </div>
+        </section>
+
+        <!-- View 2: Watchlist & Precision Timers -->
+        <section class="page-view" id="view-watchlist">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Sniper Watchlist & Live Timers</h2>
+              <p>Real-time millisecond drop countdowns calibrated against atomic clock time.</p>
+            </div>
+
+            <div class="watchlist-controls">
+              <div class="filter-bar">
+                <button class="filter-tab active" data-filter="all">All (<span id="count-filter-all">0</span>)</button>
+                <button class="filter-tab" data-filter="dropping">Dropping (<span id="count-filter-dropping">0</span>)</button>
+                <button class="filter-tab" data-filter="available">Available (<span id="count-filter-available">0</span>)</button>
+                <button class="filter-tab" data-filter="high">High Priority (<span id="count-filter-high">0</span>)</button>
+              </div>
+
+              <button class="btn-secondary" id="export-btn" title="Export Watchlist">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Export
+              </button>
+              <button class="btn-secondary" id="import-btn" title="Import Watchlist">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Import
+              </button>
+              <input type="file" id="import-file-input" accept=".json" style="display: none;" />
+            </div>
+          </div>
+
+          <div id="watchlist-grid" class="watchlist-grid">
+            <!-- Dynamically populated live countdown cards -->
+          </div>
+        </section>
+
+        <!-- View 3: Snipe Reflex Trainer (Unique Killer Feature) -->
+        <section class="page-view" id="view-trainer">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Sub-Millisecond Snipe Reflex Trainer</h2>
+              <p>Train your reaction timing and simulate network latency compensation for drop snipes.</p>
+            </div>
+          </div>
+
+          <div class="reflex-hero">
+            <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
+              Simulated Drop Target: <span style="color: var(--accent-sky); font-family: 'JetBrains Mono', monospace;">Void</span>
+            </div>
+
+            <div class="reflex-countdown-huge" id="trainer-timer-display">00:05.000</div>
+
+            <div id="trainer-feedback-box" style="min-height: 28px; font-weight: 700; font-size: 1.1rem;">
+              Click "Start Practice Round" below to begin!
+            </div>
+
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;">
+              <button class="btn-secondary" id="trainer-start-btn">Start Practice Round</button>
+              <button class="reflex-action-btn" id="trainer-snipe-btn" style="display: none;">🎯 SEND CLAIM REQUEST</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 16px; margin-top: 10px; background: rgba(0,0,0,0.25); padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+              <label style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Simulated Network Latency (Ping):</label>
+              <input type="range" id="trainer-ping-slider" min="5" max="150" value="35" style="accent-color: var(--accent-violet); cursor: pointer;" />
+              <span id="trainer-ping-val" style="font-family: 'JetBrains Mono', monospace; color: var(--accent-sky); font-weight: 700;">35 ms</span>
+            </div>
+          </div>
+
+          <div class="control-panel-card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Recent Reflex Attempts</h3>
+            <div id="trainer-attempts-list" style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="color: var(--text-muted); font-size: 0.88rem;">No attempts recorded yet this session.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- View 4: OG Name Generator -->
+        <section class="page-view" id="view-generator">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>OG & Clean Name Generator</h2>
+              <p>Generate rare 3-character combos, pronounceable 4-char CVCV words, and aesthetic names.</p>
+            </div>
+          </div>
+
+          <div class="tool-grid">
+            <div class="control-panel-card">
+              <h3 style="font-size: 1.1rem; font-weight: 700;">Generator Configuration</h3>
+              
+              <div class="form-group">
+                <label class="form-label">Generator Mode</label>
+                <select id="gen-mode-select" class="form-select">
+                  <option value="3char">3-Character Rare OG</option>
+                  <option value="cvcv">4-Character CVCV (Pronounceable)</option>
+                  <option value="aesthetic">Aesthetic Clean Nouns</option>
+                  <option value="compound">Modern Compound (Prefix/Suffix)</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="gen-pattern-group">
+                <label class="form-label">3-Char Pattern</label>
+                <select id="gen-pattern-select" class="form-select">
+                  <option value="any">Random Mixed Alphanumeric</option>
+                  <option value="letter_digit_letter">Letter + Digit + Letter (e.g. a7x)</option>
+                  <option value="all_letters">All Letters (3-Letter Rare)</option>
+                  <option value="digit_hybrid">Digit Hybrid</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Batch Size</label>
+                <select id="gen-count-select" class="form-select">
+                  <option value="12">12 Names</option>
+                  <option value="24">24 Names</option>
+                  <option value="48">48 Names</option>
+                </select>
+              </div>
+
+              <button class="btn-primary" id="run-generator-btn" style="width: 100%; justify-content: center; margin-top: 10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Generate Names
+              </button>
+            </div>
+
+            <div class="generator-output-container">
+              <div id="generator-results-grid" class="generated-results-grid">
+                <!-- Generated name cards -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- View 5: Drop Calculator -->
+        <section class="page-view" id="view-calculator">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Minecraft Drop Schedule Calculator</h2>
+              <p>Accurately calculate the 30-day original owner grace period and 37-day public drop timestamp in your Local Time.</p>
+            </div>
+          </div>
+
+          <div class="tool-grid">
+            <div class="control-panel-card">
+              <h3 style="font-size: 1.1rem; font-weight: 700;">Name Change Input</h3>
+
+              <div class="form-group">
+                <label class="form-label">Target Name</label>
+                <input type="text" id="calc-name-input" class="form-input" placeholder="e.g. Void" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Date & Time of Name Change (Local Time)</label>
+                <input type="datetime-local" id="calc-datetime-input" class="form-input" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Drop Mechanics Rule</label>
+                <select id="calc-mode-select" class="form-select">
+                  <option value="standard_37">Standard Name Change (30d Grace + 7d Drop = 37 Days)</option>
+                  <option value="account_delete_30">Account Deletion / Reset (30 Days)</option>
+                </select>
+              </div>
+
+              <button class="btn-primary" id="run-calc-btn" style="width: 100%; justify-content: center; margin-top: 10px;">
+                Calculate Drop Schedule
+              </button>
+            </div>
+
+            <div id="calc-results-card" class="control-panel-card" style="display: none;">
+              <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-sky);">Calculated Drop Timetable</h3>
+
+              <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+                <div class="uuid-box">
+                  <div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">30-Day Grace Period Expiration (Local)</div>
+                    <div id="calc-grace-output" style="font-weight: 700; color: var(--text-main); font-size: 1rem; margin-top: 2px;">--</div>
+                  </div>
+                </div>
+
+                <div class="uuid-box" style="border-color: rgba(245, 158, 11, 0.4);">
+                  <div>
+                    <div style="font-size: 0.72rem; color: var(--accent-amber); text-transform: uppercase; font-weight: 700;">Public Drop Timestamp (Local Time Release)</div>
+                    <div id="calc-drop-output" style="font-weight: 800; color: var(--accent-amber); font-size: 1.15rem; margin-top: 2px;">--</div>
+                    <div id="calc-drop-utc-output" style="font-size: 0.78rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px;">--</div>
+                  </div>
+                </div>
+
+                <div class="uuid-box">
+                  <div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Time Remaining Until Drop</div>
+                    <div id="calc-remaining-output" style="font-weight: 700; color: var(--accent-sky); font-size: 1rem; margin-top: 2px;">--</div>
+                  </div>
+                </div>
+
+                <button class="btn-primary" id="calc-add-watchlist-btn" style="margin-top: 10px; justify-content: center;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Add Directly to Watchlist
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- View 6: Mojang API Status -->
+        <section class="page-view" id="view-status">
+          <div class="view-header">
+            <div class="view-title-group">
+              <h2>Mojang & Minecraft Service Health</h2>
+              <p>Live status checks of authentication, session, skin CDNs, and lookup endpoints.</p>
+            </div>
+            <button class="btn-secondary" id="refresh-status-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              Refresh Status
+            </button>
+          </div>
+
+          <div id="status-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px;">
+            <!-- Mojang status cards -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Track / Edit Name -->
+  <div class="modal-backdrop" id="track-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-text">Track Minecraft Name</h3>
+        <button class="btn-ghost" id="close-modal-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="track-form" style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="hidden" id="track-edit-id" value="" />
+
+        <div class="form-group">
+          <label class="form-label">Minecraft Username *</label>
+          <input type="text" id="track-name-input" class="form-input" placeholder="e.g. Spectral" required maxlength="16" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Target Drop Date & Time (User's Local Time)</label>
+          <input type="datetime-local" id="track-time-input" class="form-input" />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select id="track-priority-select" class="form-select">
+              <option value="high">High 🔥</option>
+              <option value="medium" selected>Medium ⭐</option>
+              <option value="low">Low 💤</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="track-category-select" class="form-select">
+              <option value="OGs">OGs</option>
+              <option value="Sniper Target">Sniper Target</option>
+              <option value="Clean Words">Clean Words</option>
+              <option value="Personal">Personal</option>
+              <option value="Alts">Alts</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notes & Tags</label>
+          <textarea id="track-notes-input" class="form-textarea" rows="2" placeholder="e.g. 37-day drop, target for main account..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn-secondary" id="cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Save to Watchlist</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Discord Webhook Alert Settings -->
+  <div class="modal-backdrop" id="webhook-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Discord Drop Alert Webhook</h3>
+        <button class="btn-ghost" id="close-webhook-modal-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5;">
+          Paste your Discord Channel Webhook URL below. When tracked names reach <strong>15 minutes</strong> or <strong>1 minute</strong> before drop, MCNameSnipe will automatically send rich embed notifications to your server!
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Discord Webhook URL</label>
+          <input type="url" id="webhook-url-input" class="form-input" placeholder="https://discord.com/api/webhooks/..." />
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+          <button class="btn-secondary" id="test-webhook-btn">
+            Send Test Alert
+          </button>
+
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-secondary" id="cancel-webhook-btn">Cancel</button>
+            <button class="btn-primary" id="save-webhook-btn">Save Webhook</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Drop Roulette / Mystery Pick -->
+  <div class="modal-backdrop" id="roulette-modal">
+    <div class="modal-card roulette-modal-card">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.4rem;">🎲</span>
+          <h3 class="modal-title">Rare Drop Roulette</h3>
+        </div>
+        <button class="btn-ghost" id="close-roulette-modal-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="roulette-body">
+        <p style="color: var(--text-secondary); font-size: 0.88rem; text-align: center;">
+          Spin to randomly roll through upcoming drops, rare 3-character combos, and available gems!
+        </p>
+
+        <!-- Roulette Wheel Slot Display -->
+        <div class="roulette-slot-window">
+          <div class="roulette-glow-indicator"></div>
+          <div class="roulette-slot-reel" id="roulette-slot-reel">
+            <div class="roulette-slot-item">
+              <div class="roulette-reel-name">???</div>
+              <div class="roulette-reel-sub">Press Spin to Roll!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Card -->
+        <div class="roulette-result-card" id="roulette-result-card" style="display: none;"></div>
+
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px;">
+          <button class="btn-primary roulette-spin-btn" id="trigger-roulette-spin-btn">
+            <span>🎲</span>
+            <span>SPIN ROULETTE</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "MCNameSnipe Pro",
+  "short_name": "MCNameSnipe",
+  "description": "Real-Time Minecraft Name, Drop & Rarity Tracker",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c0f17",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
